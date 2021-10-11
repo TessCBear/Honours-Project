@@ -1,4 +1,4 @@
-import classes_copy as classes
+import classes
 import numpy as np
 from scipy import stats
 from matplotlib import pyplot as plt
@@ -41,12 +41,12 @@ for energy in E_list:
     else:
         fluxes = 0
     flux = np.average(fluxes)
-    flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV
+    flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV and x by scaling factor of sigma
     flux_GeV.append(flux)
 
 
 
-sigV = np.logspace(-2,5,num=1000)*1e-26  
+sigV = np.logspace(-2,5,num=1000)  
 model = np.tensordot(coma.SE(E_list),sigV,axes=0) 
 data = np.tensordot(flux_GeV,np.ones_like(sigV),axes=0) 
 

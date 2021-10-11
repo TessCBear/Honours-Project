@@ -57,7 +57,7 @@ class Astrophysical:
                 return scipy.integrate.dblquad(func, a, b, gfun, hfun)[0]*self.solar_to_GeV**2 *self.Mpc_to_cm**-5
                 #return J *(self.solar_to_kg)**2 *(1/3.086e22*(10**2)**5) #* (1/5.39e-44)**4 #unit conversion to cm^-1 kg^2
                
-    def SE(self):
+    def SE(self, E_list):
         mass = self.mass
         data = self.data
 
@@ -80,13 +80,6 @@ class Astrophysical:
             S_list.append(S_point)
 
         
-        
-        E_list = []
-        for item in data_m:
-            E = item[1]
-            E_list.append(E)
-            
-
         return np.multiply(E_list, S_list)
 
     def plot(self):
@@ -95,12 +88,16 @@ class Astrophysical:
 
         data_m = data[np.where(data[:,0]==mass)]
         freq_list = []
+        E_list = []
+    
+            
         for item in data_m:
             E = item[1]
             freq = (E/4.135667696e-24)*10**-6 # Planck's constant in GeV/Hz, so that freq is in Hz, then converted to MHz
             freq_list.append(freq)
+            E_list.append(E)
 
-        SE_list = self.SE()
+        SE_list = self.SE(E_list)
 
         plotting_data = pd.DataFrame()
         plotting_data['freq'] = freq_list
