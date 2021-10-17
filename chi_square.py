@@ -1,8 +1,9 @@
-import classes
+from astrophysical_class import Astrophysical
 import numpy as np
 from scipy import stats
 from matplotlib import pyplot as plt
 from astropy.io import fits
+import pandas as pd
 
 def chiSquare(model,data,axis=-1):
     return np.sum((model-data)**2/data**2,axis=axis)
@@ -20,11 +21,14 @@ coma_data = {
     "c_vir" : 9.0
     }
 
-coma = classes.Astrophysical(coma_data)
-coma.mass = 75
+coma = Astrophysical(coma_data)
 coma.data = np.loadtxt("madala_22_spin0_AtProduction_gammas.dat")
 
+coma.mass = 75
+
+
 data_m = coma.data[np.where(coma.data[:,0]==coma.mass)]
+
 E_list = []
 for item in data_m:
     E = item[1]

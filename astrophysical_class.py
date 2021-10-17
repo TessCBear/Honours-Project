@@ -5,6 +5,8 @@ import seaborn as sb
 import matplotlib.pyplot as plt
 import astropy.units as u
 import astropy.constants as const
+from scipy import stats
+from astropy.io import fits
 
 class Astrophysical:
     def __init__(self, galaxy):
@@ -63,12 +65,14 @@ class Astrophysical:
 
         sigma = 2.2e-26 
 
-        data_m = data[np.where(data[:,0]==mass)]
+        #data_m = data[np.where(data[:,0]==mass)]
+        data_m = data[data["#mdm(GeV)"]==mass]
 
         phi_list = []
 
-        for item in data_m:
-            phi = 1/2 * item[2]* 1/(item[0]**2) * sigma/(4*np.pi) 
+        for index, row in data_m.iterrows():
+            #phi = 1/2 * item[2]* 1/(item[0]**2) * sigma/(4*np.pi) 
+            phi = 1/2 * row["dN/dE(GeV^-1)"] * 1/(row["#mdm(GeV)"]**2) * sigma/(4*np.pi)
             phi_list.append(phi)
 
         def S(phi, J):
@@ -86,13 +90,14 @@ class Astrophysical:
         mass = self.mass
         data = self.data
 
-        data_m = data[np.where(data[:,0]==mass)]
+        #data_m = data[np.where(data[:,0]==mass)]
+        data_m = data[data["#mdm(GeV)"]==mass]
         freq_list = []
         E_list = []
     
             
-        for item in data_m:
-            E = item[1]
+        for index, row in data_m.iterrows():
+            E = row["E(GeV"]
             freq = (E/4.135667696e-24)*10**-6 # Planck's constant in GeV/Hz, so that freq is in Hz, then converted to MHz
             freq_list.append(freq)
             E_list.append(E)
@@ -111,3 +116,45 @@ class Astrophysical:
         plt.ylabel(r"$S(\nu) E(\nu)$ (GeV cm$^{-2}$ s$^{-1}$)")
         plt.xlabel(r"$\nu$ (MHz)")
         plt.show()
+
+    def chi_square_lim(self):
+        
+        def chiSquare(model,data,axis=-1):
+            return np.sum((model-data)**2/data**2,axis=axis)
+
+        def chiSqToProb(chiSq,df):
+            return stats.chi2.sf(chiSq,df)
+        
+        #data_m = self.data[np.where(self.data[:,0]==self.mass)]
+        data_m = self.data[self.data["#mdm(GeV)"]==self.mass]
+
+        E_list = []
+        for index, row in data_m.iterrows():
+            E = row["E(GeV)"]
+            E_list.append(E)
+
+        flux_GeV = []
+        for energy in E_list:
+            if energy >= 0.2 and energy < 1:
+                fluxes = [1.98, 2.28, 2.36, 2.38, 2.73, 2.18]
+            elif energy >= 1 and energy < 10:
+                fluxes = [0.77, 0.76, 0.82, 0.82, 0.74, 1.11]
+            elif energy >=10 and energy < 100:
+                fluxes = [2.01, 3.03, 3.08, 4.97, 4.88, 2.92]
+            else:
+                fluxes = 0
+            flux = np.average(fluxes)
+            flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV and x by scaling factor of sigma
+            flux_GeV.append(flux)
+
+        sigV = np.logspace(-2,5,num=1000)  
+        model = np.tensordot(self.SE(E_list),sigV,axes=0) 
+        data = np.tensordot(flux_GeV,np.ones_like(sigV),axes=0) 
+        
+        chi2 = chiSquare(model,data,axis=0)         
+        chiDiff = chi2 - min(chi2) 
+        pVals = chiSqToProb(chiDiff,1) 
+        CL = 0.05
+
+        upperLim = max(sigV[pVals>0.5*CL]) 
+        return upperLim
