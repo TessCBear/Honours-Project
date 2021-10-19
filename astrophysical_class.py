@@ -142,12 +142,12 @@ class Astrophysical:
             elif energy >=10 and energy < 100:
                 fluxes = [2.01, 3.03, 3.08, 4.97, 4.88, 2.92]
             else:
-                fluxes = 0
+                pass
             flux = np.average(fluxes)
-            flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV and x by scaling factor of sigma
+            flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV
             flux_GeV.append(flux)
 
-        sigV = np.logspace(-2,5,num=1000)  
+        sigV = np.logspace(-2,10,num=1000)  
         model = np.tensordot(self.SE(E_list),sigV,axes=0) 
         data = np.tensordot(flux_GeV,np.ones_like(sigV),axes=0) 
         
