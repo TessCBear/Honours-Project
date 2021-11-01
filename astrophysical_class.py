@@ -16,6 +16,7 @@ class Astrophysical:
         self.r_s = self.R_vir/self.c_vir
         self.density_type = galaxy["density_type"]
         self.D_L = galaxy["D_L"]
+        self.name = galaxy["name"]
     
         self.mass = 0
         self.data = []
@@ -34,12 +35,12 @@ class Astrophysical:
             return rhos*nfw(r/self.r_s)
                 
 
-    # def J_spherical(self, D, theta):
-    #     if self.density_type == 'NFW':
-    #         density = NFW_profile
-    #     else:
-    #         density = lambda r: 1
-    #     return scipy.integrate.quad(lambda r: (1/D**2) *density**2 * r**2, 0, D*theta)
+    def J_spherical(self, D, theta):
+        if self.density_type == 'NFW':
+            density = self.NFW_profile
+        else:
+            print("No density profile as given")
+        return scipy.integrate.quad(lambda r: (1/D**2) *density**2 * r**2, 0, D*theta)
     solar_to_GeV = (((1*u.M_sun).to('kg')*const.c**2).to('GeV')).to_value()
     Mpc_to_cm = ((1*u.Mpc).to('cm')).to_value()
 
@@ -49,15 +50,20 @@ class Astrophysical:
                 if self.density_type == 'NFW':
                     density = self.NFW_profile
                 else:
-                    density = lambda r: 1
+                    print("No density profile as given")
                 
-                func = lambda R, z: ((2 * np.pi) / D**2) * R * density(np.sqrt(R**2 + z**2))**2
+                if self.name == 'virgo':
+                    func = lambda R, z: ((2 * np.pi) / D**2 + R**2 + z**2) * R * density(np.sqrt(R**2 + z**2))**2
+                    theta = 3* np.pi/180
+
+                else:
+                    func = lambda R, z: ((2 * np.pi) / D**2) * R * density(np.sqrt(R**2 + z**2))**2
+                
                 a = np.NINF
                 b = np.inf
                 gfun = lambda R: 0
                 hfun = lambda R: D*theta
                 return scipy.integrate.dblquad(func, a, b, gfun, hfun)[0]*self.solar_to_GeV**2 *self.Mpc_to_cm**-5
-                #return J *(self.solar_to_kg)**2 *(1/3.086e22*(10**2)**5) #* (1/5.39e-44)**4 #unit conversion to cm^-1 kg^2
                
     def SE(self, E_list):
         mass = self.mass
@@ -65,7 +71,6 @@ class Astrophysical:
 
         sigma = 2.2e-26 
 
-        #data_m = data[np.where(data[:,0]==mass)]
         data_m = data[data["#mdm(GeV)"]==mass]
 
         phi_list = []
@@ -134,18 +139,32 @@ class Astrophysical:
             E_list.append(E)
 
         flux_GeV = []
-        for energy in E_list:
-            if energy >= 0.2 and energy < 1:
-                fluxes = [1.98, 2.28, 2.36, 2.38, 2.73, 2.18]
-            elif energy >= 1 and energy < 10:
-                fluxes = [0.77, 0.76, 0.82, 0.82, 0.74, 1.11]
-            elif energy >=10 and energy < 100:
-                fluxes = [2.01, 3.03, 3.08, 4.97, 4.88, 2.92]
-            else:
-                pass
-            flux = np.average(fluxes)
-            flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV
-            flux_GeV.append(flux)
+        if self.name == "coma":
+            for energy in E_list:
+                if energy >= 0.2 and energy < 1:
+                    fluxes = [1.98, 2.28, 2.36, 2.38, 2.73, 2.18]
+                elif energy >= 1 and energy < 10:
+                    fluxes = [0.77, 0.76, 0.82, 0.82, 0.74, 1.11]
+                elif energy >=10 and energy < 100:
+                    fluxes = [2.01, 3.03, 3.08, 4.97, 4.88, 2.92]
+                else:
+                    pass
+        elif self.name == "virgo":
+            for energy in E_list:
+                if energy >= 0.2 and energy < 1:
+                    fluxes = [4.97, 4.93, 5.26, 5.62, 5.62, 5.71, 5.62, 5.24]
+                elif energy >= 1 and energy < 10:
+                    fluxes = [4.13, 4.65, 4.72, 4.72, 4.59, 4.72, 4.33, 3.89]
+                elif energy >=10 and energy < 100:
+                    fluxes = [4.35, 5.13, 4.48, 4.48, 4.35, 4.48, 5.26, 2.67]
+                else:
+                    pass
+        else:
+            print("No data for this galaxy")
+
+        flux = np.average(fluxes)
+        flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV
+        flux_GeV.append(flux)
 
         sigV = np.logspace(-2,10,num=1000)  
         model = np.tensordot(self.SE(E_list),sigV,axes=0) 
