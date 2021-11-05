@@ -23,7 +23,7 @@ virgo_data = {
 }
 
 
-spec_type = ["22", "23"]
+spec_type = [ "22", "23"]
 for type in spec_type:
     data = pd.read_csv("madala_{}_spin0_AtProduction_gammas.dat".format(type), sep=' ')
 
@@ -31,74 +31,71 @@ for type in spec_type:
     mass = first_row["#mdm(GeV)"]
 
     coma = Astrophysical(coma_data)
-    # coma.mass = mass
-    # coma.data = data
-
     virgo = Astrophysical(virgo_data)
-    # virgo.mass = mass
-    # virgo.data = data
 
-    clusters = [virgo, ]
+    clusters = [coma, virgo ]
     for cluster in clusters:
         print(cluster.name)
         cluster.mass = mass
         cluster.data = data
         
-        masses = [mass, ]
+        # J = cluster.J_cylindrical(D = cluster.D_L, theta = 0.5)
+        # print(f"The J-factor for {cluster.name} = {J} GeV^2 cm^-5")
 
     
-        chis = []
-        for index, row in data.iterrows():
-            if row['#mdm(GeV)'] == cluster.mass:
-                pass
-            else: 
-                cluster.mass = row["#mdm(GeV)"]
-                masses.append(cluster.mass)
+        # chis = []
+        # for index, row in data.iterrows():
+        #     if row['#mdm(GeV)'] == cluster.mass:
+        #         pass
+        #     else: 
+        #         cluster.mass = row["#mdm(GeV)"]
+        #         masses.append(cluster.mass)
         
-        print(masses)
+        # print(masses)
         
 
-        for mass in masses:
-            cluster.mass = mass
-            chi = cluster.chi_square_lim()
-            chis.append(chi)
-            print(chi)
-            
-        chis_scaled = []
-        #chis22_scaled = []
-        for chi in chis:
-            chi*= 1e-26 *1/35
-            chis_scaled.append(chi)
-            # chis22_scaled.append(chi)
-        # chis23_scaled = []
-        # for chi in chis23:
+        # for mass in masses:
+        #     cluster.mass = mass
+        #     chi = cluster.chi_square_lim()
+        #     chis.append(chi)
+        #     print(chi)
+        
+        
+        # chis_scaled = []
+        # chis_nosubs = []
+        # #chis22_scaled = []
+        # for chi in chis:
+        #     chi_nosubs = chi*1e-26
         #     chi*= 1e-26 *1/35
         #     chis_scaled.append(chi)
-        #     chis23_scaled.append(chi)
+        #     chis_nosubs.append(chi_nosubs)
+        #     # chis22_scaled.append(chi)
+        
 
 
-        plt.plot(masses, chis_scaled, label = r"$\chi^2$ exclusion")
-        #plt.plot(masses23, chis23_scaled)
-        #sb.lineplot(x=masses, y=chis_scaled)
-        plt.yscale("log")
-        plt.xscale("log")
-        plt.ylabel(r"$\langle \sigma_V \rangle$")
-        plt.xlabel(r"Mass (GeV)")
+        # plt.plot(masses, chis_scaled, label = r"$\chi^2$ exclusion boosted")
+        # plt.plot(masses, chis_nosubs, label = r"$\chi^2$ exclusion")
+        # #plt.plot(masses23, chis23_scaled)
+        # #sb.lineplot(x=masses, y=chis_scaled)
+        # plt.yscale("log")
+        # plt.xscale("log")
+        # plt.ylabel(r"$\langle \sigma_V \rangle$")
+        # plt.xlabel(r"Mass (GeV)")
 
 
-        def fill(file, label_name):
-            posData = np.loadtxt(file)
-            plt.fill_between(posData[0],posData[1]*1e-26,posData[2]*1e-26,alpha=0.4,label=label_name)
+        # def fill(file, label_name):
+        #     posData = np.loadtxt(file)
+        #     plt.fill_between(posData[0],posData[1]*1e-26,posData[2]*1e-26,alpha=0.4,label=label_name)
             
             
 
 
-        fill("ams2_positrons_{}_bestfit_3sigma_{}_{}_addBaKG.data".format("med","nfw",spec_type), r"$e^{+}$ $3 \sigma$")
-        fill("ams2_antiproton_{}_{}_{}_uncorrelated_bestfit_3sigma.data".format(spec_type, "nfw", "med"), r"$\bar{p}$ $3 \sigma$")
-        fill("fermi_gc10_{}_{}_bestfit_3sigma.data".format("nfw", spec_type), r"Fermi gc10 $3 \sigma$")
-        plt.legend(loc="lower right")
-        plt.title("{}: Spectral type {} (substructure accounted for)".format(cluster.name, spec_type))
-        plt.show()
+        # fill("ams2_positrons_{}_bestfit_3sigma_{}_{}_addBaKG.data".format("med","nfw",type), r"$e^{+}$ $3 \sigma$")
+        # fill("ams2_antiproton_{}_{}_{}_uncorrelated_bestfit_3sigma.data".format(type, "nfw", "med"), r"$\bar{p}$ $3 \sigma$")
+        # fill("fermi_gc10_{}_{}_bestfit_3sigma.data".format("nfw", type), r"Fermi gc10 $3 \sigma$")
+        # plt.legend(loc = "upper left")
+        # plt.title(r"{}: Spectral type {} $\chi^2$ exclusion at 95% CL".format(cluster.name, type))
+        # plt.show()
 
 
 

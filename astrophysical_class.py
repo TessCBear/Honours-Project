@@ -35,12 +35,12 @@ class Astrophysical:
             return rhos*nfw(r/self.r_s)
                 
 
-    def J_spherical(self, D, theta):
-        if self.density_type == 'NFW':
-            density = self.NFW_profile
-        else:
-            print("No density profile as given")
-        return scipy.integrate.quad(lambda r: (1/D**2) *density**2 * r**2, 0, D*theta)
+    # def J_spherical(self, D, theta):
+    #     if self.density_type == 'NFW':
+    #         density = self.NFW_profile
+    #     else:
+    #         print("No density profile as given")
+    #     return scipy.integrate.quad(lambda r: (1/D**2) *density**2 * r**2, 0, D*theta)
     solar_to_GeV = (((1*u.M_sun).to('kg')*const.c**2).to('GeV')).to_value()
     Mpc_to_cm = ((1*u.Mpc).to('cm')).to_value()
 
@@ -69,7 +69,8 @@ class Astrophysical:
         mass = self.mass
         data = self.data
 
-        sigma = 2.2e-26 
+        #sigma = 2.2e-26 
+        sigma = 1e-25
 
         data_m = data[data["#mdm(GeV)"]==mass]
 
@@ -102,7 +103,7 @@ class Astrophysical:
     
             
         for index, row in data_m.iterrows():
-            E = row["E(GeV"]
+            E = row["E(GeV)"]
             freq = (E/4.135667696e-24)*10**-6 # Planck's constant in GeV/Hz, so that freq is in Hz, then converted to MHz
             freq_list.append(freq)
             E_list.append(E)
@@ -113,14 +114,14 @@ class Astrophysical:
         plotting_data['freq'] = freq_list
         plotting_data['SE'] = SE_list
 
-        sb.lineplot(data=plotting_data, x='freq', y= 'SE')
+        sb.lineplot(data=plotting_data, x='freq', y= 'SE', label = f"Mass of {mass} GeV")
         plt.yscale("log")
         plt.xscale("log")
 
         plt.rcParams['text.usetex'] = True
         plt.ylabel(r"$S(\nu) E(\nu)$ (GeV cm$^{-2}$ s$^{-1}$)")
         plt.xlabel(r"$\nu$ (MHz)")
-        plt.show()
+        # plt.show()
 
     def chi_square_lim(self):
         
@@ -165,6 +166,7 @@ class Astrophysical:
         flux = np.average(fluxes)
         flux *= 6.2415e-10 #conversion from 1e-12 erg to GeV
         flux_GeV.append(flux)
+
 
         sigV = np.logspace(-2,10,num=1000)  
         model = np.tensordot(self.SE(E_list),sigV,axes=0) 
