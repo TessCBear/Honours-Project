@@ -120,7 +120,7 @@ def plot_data(mass, data):
 
     return plotting_data
 
-data = pd.read_csv("madala_23_spin0_AtProduction_gammas.dat", sep=' ')
+data = pd.read_csv(".\model_data\madala_23_spin0_AtProduction_gammas.dat", sep=' ')
 m75 = plot_data(200, data)
 m200 = plot_data(400, data)
 

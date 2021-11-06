@@ -45,9 +45,9 @@ def fill(file, label_name):
     
 
 
-fill("ams2_positrons_{}_bestfit_3sigma_{}_{}_addBaKG.data".format("med","nfw",type), r"$e^{+}$ $3 \sigma$")
-fill("ams2_antiproton_{}_{}_{}_uncorrelated_bestfit_3sigma.data".format(type, "nfw", "med"), r"$\bar{p}$ $3 \sigma$")
-fill("fermi_gc10_{}_{}_bestfit_3sigma.data".format("nfw", type), r"Fermi gc10 $3 \sigma$")
+fill(".\parameter_space\\ams2_positrons_{}_bestfit_3sigma_{}_{}_addBaKG.data".format("med","nfw",type), r"$e^{+}$ $3 \sigma$")
+fill(".\parameter_space\\ams2_antiproton_{}_{}_{}_uncorrelated_bestfit_3sigma.data".format(type, "nfw", "med"), r"$\bar{p}$ $3 \sigma$")
+fill(".\parameter_space\\fermi_gc10_{}_{}_bestfit_3sigma.data".format("nfw", type), r"Fermi gc10 $3 \sigma$")
 plt.legend(loc = "upper left")
 plt.title(r"{}: Spectral type {} $\chi^2$ exclusion at 95% CL".format("Virgo", type))
 plt.show()
