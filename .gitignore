@@ -147,13 +147,6 @@ dmypy.json
 # Pyre type checker
 .pyre/
 
-# pytype static type analyzer
-.pytype/
-
-*.pdf
-*.png
-*.html
-*.ipynb
 
 # Cython debug symbols
 cython_debug/
