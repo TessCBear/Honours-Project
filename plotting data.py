@@ -10,9 +10,9 @@ vchis22 = [637.9766808606282, 1239.0621569479156, 5220.567527846975, 11969.55702
 vchis23 = [1679.6748720926532, 4301.6357581067905, 7904.92762269642, 12650.337203959038, 18124.175473742358, 25258.200269627847, 32397.426295281955, 122204.46866314887, 50431.59487171359]
 
 
-chis = vchis22
-masses = masses22
-type = "22"
+chis = vchis23
+masses = masses23
+type = "23"
 
 chis_scaled = []
 chis_nosubs = []
@@ -34,7 +34,7 @@ plt.plot(masses, chis_nosubs, label = r"$\chi^2$ exclusion")
 #sb.lineplot(x=masses, y=chis_scaled)
 plt.yscale("log")
 plt.xscale("log")
-plt.ylabel(r"$\langle \sigma_V \rangle$")
+plt.ylabel(r"$\langle \sigma_V \rangle$ (cm$^3$ s$^{-1}$)")
 plt.xlabel(r"Mass (GeV)")
 
 
