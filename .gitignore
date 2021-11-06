@@ -179,6 +179,4 @@ cython_debug/
 Writeup/
 
 # Ignore rough work files
-./chi_square.py
-./exclusion_chi2.py
-./test.py
+Rough/
